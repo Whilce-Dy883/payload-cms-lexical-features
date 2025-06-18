@@ -10,6 +10,8 @@ import sharp from 'sharp'
 import { Users } from './collections/Users'
 import { Posts } from './collections/Post'
 
+import { MarkFeature } from './markfeature/features/mark.server'
+
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -21,7 +23,12 @@ export default buildConfig({
     },
   },
   collections: [Users, Posts],
-  editor: lexicalEditor(),
+  // Merge the default features with the custom mark/highlight feature
+  editor: lexicalEditor({
+    features: ({ defaultFeatures }) => {
+      return [...defaultFeatures, MarkFeature()]
+    },
+  }),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),

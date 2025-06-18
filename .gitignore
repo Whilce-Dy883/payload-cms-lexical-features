@@ -123,6 +123,8 @@ dist
 # DynamoDB Local files
 .dynamodb/
 
+next-env.d.ts
+.env
 # TernJS port file
 .tern-port
 
