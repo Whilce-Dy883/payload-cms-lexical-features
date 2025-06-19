@@ -5,9 +5,9 @@ import { createServerFeature } from '@payloadcms/richtext-lexical'
  * It links to the client-side implementation to be used in the editor.
  */
 
-export const MarkFeature = createServerFeature({
+export const FootnoteFeature = createServerFeature({
   feature: {
-    ClientFeature: '@/markfeature/features/mark.client', // Path to client-side logic
+    ClientFeature: '@/features/footnote/footnote.client', // Path to client-side logic
   },
-  key: 'marks', // Unique key for identifying this feature
+  key: 'footnote', // Unique key for identifying this feature
 })

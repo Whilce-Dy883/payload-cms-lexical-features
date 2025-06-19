@@ -21,7 +21,7 @@ import { faHighlighter } from '@fortawesome/free-solid-svg-icons'
  * React component to render the highlighter icon in the toolbar.
  */
 export const MarkIcon = () => {
-  return <FontAwesomeIcon icon={faHighlighter} />
+  return <FontAwesomeIcon icon={faHighlighter} style={{ color: '#aaaaaa' }} />
 }
 
 /**
@@ -44,6 +44,7 @@ const toolbarGroups: ToolbarGroup[] = [
         // Toggle highlight on selected text
         editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'highlight')
       },
+      order: 3,
     },
   ]),
 ]
