@@ -45,8 +45,6 @@ All features are written in **TypeScript** using **Payload v3.x.x** with a **Mon
 - Selection is preserved on click.
 - Serializes to proper `<mark>` in HTML output.
 
-📽 **Loom demo:** [Watch Highlight Feature in Action](#) <!-- Replace with real link -->
-
 ### ✅ 5. Footnote Feature
 
 - Replaces the default `superscript` button with a custom footnote handler.
@@ -59,7 +57,7 @@ All features are written in **TypeScript** using **Payload v3.x.x** with a **Mon
 - Inline preview with **edit** and **delete** buttons.
 - Converts to `<sup>` with anchor reference and `<footer><ul><li>` HTML on export.
 
-📽 **Loom demo:** [Watch Footnote Feature in Action](#) <!-- Replace with real link -->
+📽 **Loom demo:** <a href="https://www.loom.com/share/41c989178f1843f4aae46f328f631e40">https://www.loom.com/share/41c989178f1843f4aae46f328f631e40</a>(#) <!-- Replace with real link -->
 
 ---
 
