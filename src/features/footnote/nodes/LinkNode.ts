@@ -87,7 +87,7 @@ export class LinkNode extends ElementNode {
     }
 
     if (serializedNode.version === 2 && !serializedNode.id) {
-      serializedNode.id = new ObjectID().toHexString()
+      serializedNode.id = new ObjectID.default().toHexString()
       serializedNode.version = 3
     }
     return node
@@ -258,7 +258,7 @@ function $convertAnchorElement(domNode: Node): DOMConversionOutput {
     const content = domNode.textContent
     if (content !== null && content !== '') {
       node = $createLinkNode({
-        id: new ObjectID().toHexString(),
+        id: new ObjectID.default().toHexString(),
         fields: {
           doc: null,
           linkType: 'custom',
@@ -274,7 +274,7 @@ function $convertAnchorElement(domNode: Node): DOMConversionOutput {
 export function $createLinkNode({ id, fields }: { fields?: LinkFields; id?: string }): LinkNode {
   return $applyNodeReplacement(
     new LinkNode({
-      id: id ?? new ObjectID().toHexString(),
+      id: id ?? new ObjectID.default().toHexString(),
       fields,
     }),
   )

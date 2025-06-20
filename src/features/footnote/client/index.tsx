@@ -85,7 +85,6 @@ const toolbarGroups: ToolbarGroup[] = [
             const offset = selection.anchor.offset
 
             // Collapse selection to the end
-            //@ts-ignore
             selection.setTextNodeRange(anchor, offset, anchor, offset)
 
             // Insert the text
@@ -97,7 +96,6 @@ const toolbarGroups: ToolbarGroup[] = [
 
             const newSelection = $getSelection()
             if ($isRangeSelection(newSelection)) {
-              //@ts-ignore
               newSelection.setTextNodeRange(textNode, offset, textNode, newOffset)
             }
           })
@@ -114,7 +112,7 @@ const toolbarGroups: ToolbarGroup[] = [
           editor.dispatchCommand(TOGGLE_LINK_COMMAND, null)
         }
       },
-      order: 4, // Order in the toolbar
+      order: 4,
     },
   ]),
 ]

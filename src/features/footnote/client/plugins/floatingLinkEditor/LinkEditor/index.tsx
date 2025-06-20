@@ -35,12 +35,12 @@ import type { LinkPayload } from '../types'
 import { $isAutoLinkNode } from '../../../../nodes/AutoLinkNode'
 import { $createLinkNode, $isLinkNode, TOGGLE_LINK_COMMAND } from '../../../../nodes/LinkNode'
 import { TOGGLE_LINK_WITH_MODAL_COMMAND } from './commands'
-import {
-  FieldsDrawer,
-  getSelectedNode,
-  setFloatingElemPositionForLinkEditor,
-  useEditorConfigContext,
-  useLexicalDrawer,
+import { 
+  FieldsDrawer, 
+  getSelectedNode, 
+  setFloatingElemPositionForLinkEditor, 
+  useEditorConfigContext, 
+  useLexicalDrawer 
 } from '@payloadcms/richtext-lexical/client'
 
 function preventDefault(
@@ -72,8 +72,6 @@ export function LinkEditor({ anchorElem }: { anchorElem: HTMLElement }): React.R
   const [stateData, setStateData] = useState<
     ({ id?: string; text: string } & LinkFields) | undefined
   >()
-
-  const [selectedText, setSelectedText] = useState<string | undefined>(undefined)
 
   const editDepth = useEditDepth()
   const [isLink, setIsLink] = useState(false)
@@ -111,10 +109,14 @@ export function LinkEditor({ anchorElem }: { anchorElem: HTMLElement }): React.R
       void setNotLink()
       return
     }
+
+    // Handle the data displayed in the floating link editor & drawer when you click on a link node
+
     const focusNode = getSelectedNode(selection)
     selectedNodeDomRect = editor.getElementByKey(focusNode.getKey())?.getBoundingClientRect()
     const focusLinkParent = $findMatchingParent(focusNode, $isLinkNode)
 
+    // Prevent link modal from showing if selection spans further than the link: https://github.com/facebook/lexical/issues/4064
     const badNode = selection
       .getNodes()
       .filter((node) => !$isLineBreakNode(node))
@@ -270,7 +272,7 @@ export function LinkEditor({ anchorElem }: { anchorElem: HTMLElement }): React.R
         TOGGLE_LINK_WITH_MODAL_COMMAND,
         (payload: LinkPayload) => {
           editor.dispatchCommand(TOGGLE_LINK_COMMAND, payload)
-          setSelectedText(payload?.text ?? undefined)
+
           // Now, open the modal
           $updateLinkEditor()
           toggleDrawer()
@@ -346,74 +348,73 @@ export function LinkEditor({ anchorElem }: { anchorElem: HTMLElement }): React.R
   return (
     <React.Fragment>
       <div className="link-editor" ref={editorRef}>
-        <div className="link-editor-container">
-          <div>{selectedText}</div>
-          <div className="link-input">
-            {linkUrl && linkUrl.length > 0 ? (
-              <a href={linkUrl} rel="noopener noreferrer" target="_blank">
-                {linkNode?.__fields.newTab ? <ExternalLinkIcon /> : null}
-                {linkLabel != null && linkLabel.length > 0 ? linkLabel : linkUrl}
-              </a>
-            ) : linkLabel != null && linkLabel.length > 0 ? (
-              <>
-                {linkNode?.__fields.newTab ? <ExternalLinkIcon /> : null}
-                <span className="link-input__label-pure">{linkLabel}</span>
-              </>
-            ) : null}
-            {linkContent && linkContent.length > 0 ? (
-              <a href={linkContent} target="_blank" rel="noopener noreferrer">
-                {linkContent}
-              </a>
-            ) : null}
-            {editor.isEditable() && (
-              <React.Fragment>
+        <div className="link-input">
+          {linkUrl && linkUrl.length > 0 ? (
+            <a href={linkUrl} rel="noopener noreferrer" target="_blank">
+              {linkNode?.__fields.newTab ? <ExternalLinkIcon /> : null}
+              {linkLabel != null && linkLabel.length > 0 ? linkLabel : linkUrl}
+            </a>
+          ) : linkLabel != null && linkLabel.length > 0 ? (
+            <>
+              {linkNode?.__fields.newTab ? <ExternalLinkIcon /> : null}
+              <span className="link-input__label-pure">{linkLabel}</span>
+            </>
+          ) : null}
+          {
+            linkContent && linkContent.length > 0 ? (
+              <>{linkContent}</>
+            ): null
+          }
+
+          {editor.isEditable() && (
+            <React.Fragment>
+              <button
+                aria-label="Edit link"
+                className="link-edit"
+                onClick={(event) => {
+                  event.preventDefault()
+                  toggleDrawer()
+                }}
+                onMouseDown={preventDefault}
+                tabIndex={0}
+                type="button"
+              >
+                <EditIcon />
+              </button>
+              {!isAutoLink && (
                 <button
-                  aria-label="Edit link"
-                  className="link-edit"
-                  onClick={(event) => {
-                    event.preventDefault()
-                    toggleDrawer()
+                  aria-label="Remove link"
+                  className="link-trash"
+                  onClick={() => {
+                    editor.dispatchCommand(TOGGLE_LINK_COMMAND, null)
                   }}
                   onMouseDown={preventDefault}
                   tabIndex={0}
                   type="button"
                 >
-                  <EditIcon />
+                  <CloseMenuIcon />
                 </button>
-                {!isAutoLink && (
-                  <button
-                    aria-label="Remove link"
-                    className="link-trash"
-                    onClick={() => {
-                      editor.dispatchCommand(TOGGLE_LINK_COMMAND, null)
-                    }}
-                    onMouseDown={preventDefault}
-                    tabIndex={0}
-                    type="button"
-                  >
-                    <CloseMenuIcon />
-                  </button>
-                )}
-              </React.Fragment>
-            )}
-          </div>
+              )}
+            </React.Fragment>
+          )}
         </div>
       </div>
       <FieldsDrawer
         className="lexical-link-edit-drawer"
         data={stateData}
         drawerSlug={drawerSlug}
-        drawerTitle={'Edit Footnote'}
+        drawerTitle={"Edit Footnote"}
         featureKey="link"
         // @ts-ignore
         handleDrawerSubmit={(fields: FormState, data: Data) => {
           const newLinkPayload = data as { text: string } & LinkFields
+
           const bareLinkFields: LinkFields = {
             ...newLinkPayload,
           }
           delete bareLinkFields.text
-          // this code is used to convert an auto link node to a link node, so we need to remove the text field from GitHub's payload
-          // otherwise, the text will be applied to the auto link node instead of the link node
+
+          // See: https://github.com/facebook/lexical/pull/5536. This updates autolink nodes to link nodes whenever a change was made (which is good!).
           editor.update(() => {
             const selection = $getSelection()
             let linkParent: ElementNode | null = null
