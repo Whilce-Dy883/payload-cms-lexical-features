@@ -1,29 +1,15 @@
 // storage-adapter-import-placeholder
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
-import {
-  AlignFeature,
-  BoldFeature,
-  HeadingFeature,
-  IndentFeature,
-  InlineCodeFeature,
-  InlineToolbarFeature,
-  ItalicFeature,
-  lexicalEditor,
-  LinkFeature,
-  StrikethroughFeature,
-  UnderlineFeature,
-} from '@payloadcms/richtext-lexical'
+import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
-
 import { Users } from './collections/Users'
 import { Posts } from './collections/Post'
-
 import { MarkFeature } from './features/mark/mark.server'
-import { FootnoteFeature } from './features/footnote/footnote.server'
+import { FootnoteFeature } from './features/footnote/server'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -36,31 +22,15 @@ export default buildConfig({
     },
   },
   collections: [Users, Posts],
-  // Merge the default features with the custom mark/highlight feature
   editor: lexicalEditor({
-    features: ({}) => [
-      InlineToolbarFeature(),
-      HeadingFeature(),
-      AlignFeature(),
-      IndentFeature(),
-      BoldFeature(),
-      MarkFeature(),
-      ItalicFeature(),
-      UnderlineFeature(),
-      StrikethroughFeature(),
-      FootnoteFeature(),
-      InlineCodeFeature(),
-      LinkFeature({
-        disableAutoLinks: true,
-        fields: [
-          {
-            label: 'Content',
-            name: 'content',
-            type: 'text',
-          },
-        ],
-      }),
-    ],
+    features: ({ defaultFeatures }) => {
+      const removeFeatures = ['subscript', 'superscript']
+      return [
+        ...defaultFeatures.filter((feature) => !removeFeatures.includes(feature.key)),
+        MarkFeature(),
+        FootnoteFeature(),
+      ]
+    },
   }),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

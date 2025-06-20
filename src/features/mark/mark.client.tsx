@@ -3,7 +3,7 @@
 import React from 'react'
 
 // Lexical helpers for formatting and selections
-import { $isRangeSelection, FORMAT_TEXT_COMMAND } from 'lexical'
+import { $isRangeSelection, FORMAT_TEXT_COMMAND, RangeSelection } from 'lexical'
 import { $isTableSelection } from '@lexical/table'
 
 // Payload CMS Lexical types and helpers
@@ -35,8 +35,12 @@ const toolbarGroups: ToolbarGroup[] = [
       ChildComponent: MarkIcon, // Icon shown in the toolbar
       isActive: ({ selection }) => {
         // Activate button when selection includes 'highlight' format
-        if ($isRangeSelection(selection) || $isTableSelection(selection)) {
-          return selection.hasFormat('highlight')
+        if ($isRangeSelection(selection)) {
+          //@ts-ignore
+          return (selection as RangeSelection).hasFormat('highlight')
+        }
+        if ($isTableSelection(selection)) {
+          return (selection as any).hasFormat?.('highlight') ?? false
         }
         return false
       },
